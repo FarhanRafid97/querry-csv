@@ -122,6 +122,7 @@ function CSVDuckDBReader() {
   };
 
   const handleExecuteQuery = async () => {
+    setError("");
     try {
       // Extract the table name from the customQuery if it matches the pattern FROM "csv_<something>", FROM 'csv_<something>', or FROM csv_<something>
 
