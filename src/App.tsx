@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDuckDBStore } from "./store/duckdb";
 import OutputData from "./components/modules/output-data";
 import Papa from "papaparse";
+import SQLEditor from "./components/modules/sql-editor";
 function CSVDuckDBReader() {
   const {
     db,
@@ -11,6 +12,7 @@ function CSVDuckDBReader() {
     error: errorDuckdb,
     executeQuery,
   } = useDuckDBStore();
+
   const [data, setData] = useState<any[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [csvFile, setCsvFile] = useState<File | null>(null);
@@ -152,6 +154,7 @@ function CSVDuckDBReader() {
       setError(error as string);
     }
   };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
@@ -196,6 +199,7 @@ function CSVDuckDBReader() {
       {data.length > 0 && (
         <div className="mb-6 p-4 bg-yellow-50 rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Custom Query</h2>
+          <SQLEditor />
           <textarea
             style={{
               resize: "vertical",

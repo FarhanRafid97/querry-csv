@@ -19,6 +19,7 @@ interface DuckDBActions {
   initialize: () => Promise<void>;
   executeQuery: (query: string) => Promise<any>;
   closeConnection: () => Promise<void>;
+  setError: (error: string) => void;
 }
 
 type DuckDBStore = DuckDBState & DuckDBActions;
@@ -44,7 +45,7 @@ async function instantiateDuckDB(
     URL.revokeObjectURL(worker_url);
 
     return db;
-  } catch (error) {
+  } catch {
     console.log("error disisni");
   }
 }
@@ -56,8 +57,10 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
   connection: null,
   loading: false,
   error: null,
+
   isInitialized: false,
 
+  setError: (error: string) => set({ error: error }),
   // Actions
   initialize: async () => {
     const { db, loading, isInitialized } = get();
