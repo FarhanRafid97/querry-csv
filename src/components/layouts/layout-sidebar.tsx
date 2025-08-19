@@ -19,6 +19,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import SQLEditor from "../modules/sql-editor";
+import { loadCSV } from "@/lib/utils";
 
 export default function Page() {
   return (
@@ -57,7 +58,19 @@ export default function Page() {
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>Two</ResizablePanel>
+          <ResizablePanel>
+            <div>
+              <input
+                accept=".csv,text/csv"
+                type="file"
+                onChange={(e) => {
+                  if (e.target.files) {
+                    loadCSV(e.target.files[0]);
+                  }
+                }}
+              />
+            </div>
+          </ResizablePanel>
         </ResizablePanelGroup>
       </SidebarInset>
     </SidebarProvider>

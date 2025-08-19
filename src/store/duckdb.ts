@@ -1,28 +1,12 @@
+import type {
+  AsyncDuckDBInstance,
+  DuckDBModule,
+  DuckDBStore,
+  TableMetaData,
+} from "@/type/duckdb-state-type";
 import * as duckdb from "@duckdb/duckdb-wasm";
 import { useEffect } from "react";
 import { create } from "zustand";
-
-// Types (removed duplicate type definitions)
-type DuckDBModule = typeof duckdb;
-type AsyncDuckDBInstance = InstanceType<typeof duckdb.AsyncDuckDB>;
-type DuckDBConnection = Awaited<ReturnType<AsyncDuckDBInstance["connect"]>>;
-
-interface DuckDBState {
-  db: AsyncDuckDBInstance | null;
-  connection: DuckDBConnection | null;
-  loading: boolean;
-  error: string | null;
-  isInitialized: boolean;
-}
-
-interface DuckDBActions {
-  initialize: () => Promise<void>;
-  executeQuery: (query: string) => Promise<any>;
-  closeConnection: () => Promise<void>;
-  setError: (error: string) => void;
-}
-
-type DuckDBStore = DuckDBState & DuckDBActions;
 
 // DuckDB initialization function
 async function instantiateDuckDB(
@@ -47,6 +31,7 @@ async function instantiateDuckDB(
     return db;
   } catch {
     console.log("error disisni");
+    throw new Error("Failed to initialize DuckDB");
   }
 }
 
@@ -55,12 +40,22 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
   // Initial state
   db: null,
   connection: null,
+  listTable: new Map(),
+  currentShowingData: [],
   loading: false,
   error: null,
-
+  selectedTable: null,
   isInitialized: false,
 
   setError: (error: string) => set({ error: error }),
+  setListTable: (listTable: Map<string, TableMetaData>) =>
+    set({ listTable: listTable }),
+
+  setCurrentShowingData: (currentShowingData: object[]) =>
+    set({ currentShowingData: currentShowingData }),
+
+  setSelectedTable: (selectedTable: TableMetaData | null) =>
+    set({ selectedTable: selectedTable }),
   // Actions
   initialize: async () => {
     const { db, loading, isInitialized } = get();
@@ -83,6 +78,8 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
         loading: false,
         error: null,
         isInitialized: true,
+        listTable: new Map(),
+        currentShowingData: [],
       });
 
       console.log("DuckDB initialized successfully");

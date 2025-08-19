@@ -1,8 +1,8 @@
-import Papa from "papaparse";
 import React, { useState } from "react";
-import OutputData from "./components/modules/output-data";
-import { useDuckDBStore } from "./store/duckdb";
-import type { TableMetaData } from "./type/duckdb-state-type";
+import { useDuckDBStore } from "@/store/duckdb";
+import OutputData from "./output-data";
+import Papa from "papaparse";
+import SQLEditor from "./sql-editor";
 function CSVDuckDBReader() {
   const {
     db,
@@ -10,16 +10,15 @@ function CSVDuckDBReader() {
     isInitialized,
     loading,
     error: errorDuckdb,
-    listTable,
-    setListTable,
-    selectedTable,
-    setSelectedTable,
     executeQuery,
   } = useDuckDBStore();
 
   const [data, setData] = useState<any[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [queryResult, setQueryResult] = useState<any[]>([]);
+  const [listTable, setListTable] = useState<Map<string, string[]>>(new Map());
+  const [selectedTable, setSelectedTable] = useState<string | null>(null);
 
   const [error, setError] = useState<string>("");
   const [customQuery, setCustomQuery] = useState("");
@@ -32,6 +31,7 @@ function CSVDuckDBReader() {
       loadCSV(e.target.files[0]);
       setData([]);
       setHeaders([]);
+      setQueryResult([]);
     }
   };
 
@@ -45,82 +45,46 @@ function CSVDuckDBReader() {
     try {
       // Read file as text for Papa Parse
       const fileText = await files.text();
+      const uint8Array = new TextEncoder().encode(fileText);
+      console.log(files.name);
 
-      // Parse CSV with Papa Parse to handle all delimiters automatically
-      const parseResult = Papa.parse(fileText, {
-        header: true,
-        skipEmptyLines: true,
-        dynamicTyping: true,
-        complete: async (results) => {
-          try {
-            console.log("ini parseResult", results.data);
-            // Convert parsed data back to CSV format for DuckDB
-            const csvData = Papa.unparse(results.data, {
-              header: true,
-            });
+      // Register the file with DuckDB
 
-            // Create ArrayBuffer from the processed CSV data
-            const uint8Array = new TextEncoder().encode(csvData);
-            console.log(files.name);
+      // Use a simple, valid table name (remove extension and special chars)
+      const baseName = files.name
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-zA-Z0-9_]/g, "_");
+      const tableName = `csv_${baseName}`;
 
-            // Register the file with DuckDB
-            await db!.registerFileBuffer(files.name, uint8Array);
+      await connection.query(`DROP TABLE IF EXISTS "${tableName}"`);
 
-            // Use a simple, valid table name (remove extension and special chars)
-            const baseName = files.name
-              .replace(/\.[^/.]+$/, "")
-              .replace(/[^a-zA-Z0-9_]/g, "_");
-            const tableName = `csv_${baseName}`;
+      await db!.registerFileBuffer(files.name, uint8Array);
 
-            // Drop table if exists
-            await connection.query(`DROP TABLE IF EXISTS "${tableName}"`);
+      // Drop table if exists
 
-            // Create table from CSV
-            await connection.query(
-              `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${files.name}', header=true)`
-            );
+      // Get schema information
+      const schemaQuery = await connection.query(`DESCRIBE "${tableName}"`);
+      const schemaResult = schemaQuery.toArray();
+      const columnNames = schemaResult.map(
+        (row: { column_name: string }) => row.column_name
+      );
+      setHeaders(columnNames);
 
-            // Get schema information
-            const schemaQuery = await connection.query(
-              `DESCRIBE "${tableName}"`
-            );
-            const schemaResult = schemaQuery.toArray();
-            const columnNames = schemaResult.map(
-              (row: { column_name: string }) => row.column_name
-            );
-            setHeaders(columnNames);
-
-            const metadataTable: TableMetaData = {
-              label: tableName,
-              columns: columnNames,
-              total_data: results.data.length,
-            };
-            // Update listTable with new table and columns
-            const newMap = new Map(listTable);
-            newMap.set(tableName, metadataTable);
-            setListTable(newMap);
-            setSelectedTable(metadataTable);
-
-            // Get first 10 rows for preview
-            const defaultQuerry = `SELECT * FROM "${tableName}" LIMIT 10`;
-            const dataQuery = await connection.query(defaultQuerry);
-            console.log("ini dataQuery");
-            setCustomQuery(defaultQuerry);
-            const dataResult = dataQuery
-              .toArray()
-              .map((row: any) => row.toArray());
-            setData(dataResult);
-          } catch (err) {
-            setError(`Error processing CSV data: ${err}`);
-            console.error("CSV processing error:", err);
-          }
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        error: (error: any) => {
-          setError(`Error parsing CSV: ${error.message}`);
-          console.error("CSV parsing error:", error);
-        },
+      // Update listTable with new table and columns
+      setListTable((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(tableName, columnNames);
+        return newMap;
       });
+      setSelectedTable(tableName);
+
+      // Get first 10 rows for preview
+      const defaultQuerry = `SELECT * FROM "${tableName}" LIMIT 10`;
+      const dataQuery = await connection.query(defaultQuerry);
+      console.log("ini dataQuery");
+      setCustomQuery(defaultQuerry);
+      const dataResult = dataQuery.toArray().map((row: any) => row.toArray());
+      setData(dataResult);
     } catch (err) {
       setError(`Error loading CSV: ${err}`);
       console.error("CSV loading error:", err);
@@ -145,8 +109,8 @@ function CSVDuckDBReader() {
       );
       if (tableNameMatch && tableNameMatch[1]) {
         extractedTableName = tableNameMatch[1];
-
-        setSelectedTable(listTable.get(extractedTableName) || null);
+        console.log("Extracted table name:", extractedTableName);
+        setSelectedTable(extractedTableName);
       }
       const { result, headers } = resultData;
       const arrayData = result.toArray().map((row: any) => row.toArray());
@@ -203,7 +167,7 @@ function CSVDuckDBReader() {
       {data.length > 0 && (
         <div className="mb-6 p-4 bg-yellow-50 rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Custom Query</h2>
-
+          <SQLEditor />
           <textarea
             style={{
               resize: "vertical",
@@ -240,10 +204,10 @@ function CSVDuckDBReader() {
           )}
 
           <div className="mt-4 text-sm text-gray-600">
-            {Array.from(listTable.entries()).map(([, metadataTable]) => (
-              <div key={metadataTable.label}>
-                <h3>{metadataTable.label}</h3>
-                <p>{metadataTable.columns.join(", ")}</p>
+            {Array.from(listTable.entries()).map(([tableName, columnNames]) => (
+              <div key={tableName}>
+                <h3>{tableName}</h3>
+                <p>{columnNames.join(", ")}</p>
               </div>
             ))}
             <p>

@@ -1,9 +1,9 @@
-const OutputData = <T extends []>({
+const OutputData = ({
   data,
 
   headers,
 }: {
-  data: T;
+  data: [][];
 
   headers: string[];
 }) => {
@@ -34,14 +34,19 @@ const OutputData = <T extends []>({
                     key={rowIndex}
                     className={rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
-                    {row.map((cell: any, cellIndex: number) => (
-                      <td
-                        key={cellIndex}
-                        className="px-4 py-2 text-sm text-gray-900 border-b"
-                      >
-                        {cell !== null ? String(cell) : "NULL"}
-                      </td>
-                    ))}
+                    {row.map(
+                      (
+                        cell: string | number | null | undefined,
+                        cellIndex: number
+                      ) => (
+                        <td
+                          key={cellIndex}
+                          className="px-4 py-2 text-sm text-gray-900 border-b"
+                        >
+                          {cell !== null ? String(cell) : "NULL"}
+                        </td>
+                      )
+                    )}
                   </tr>
                 ))}
               </tbody>
