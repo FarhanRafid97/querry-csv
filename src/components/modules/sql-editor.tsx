@@ -49,13 +49,9 @@ const SQLEditor = () => {
           return;
         }
         // Remove line comments (--) and ignore lines that are only comments
-        const cleanQuerry = queryToExecute
-          .split("\n")
-          .filter((line) => !line.trim().startsWith("//"))
-          .join("\n");
-        console.log(cleanQuerry);
 
-        const splitquerry = cleanQuerry.split(";");
+        const splitquerry = queryToExecute.split(";");
+        console.log("ini splitquerry", splitquerry);
         const multipleData: [][] = [];
         const multipleHeaders: [][] = [];
         splitquerry.forEach(async (querry) => {
@@ -88,6 +84,7 @@ const SQLEditor = () => {
           multipleData.push(arrayData);
           multipleHeaders.push(headers);
         });
+
         setErrorQuerry("");
 
         setCurrentShowingDataMultiple(multipleData);

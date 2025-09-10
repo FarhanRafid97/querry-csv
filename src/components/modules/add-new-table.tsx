@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { toast } from "sonner";
 import type { TableMetaData } from "@/type/table";
 import useTableStore from "@/store/table";
+import { detectDelimiter } from "@/lib/utils";
 
 const AddNewTable = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -15,7 +16,13 @@ const AddNewTable = () => {
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      loadCSV(e.target.files[0]);
+      const file = e.target.files[0];
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("CSV file size exceeds 5MB limit.");
+        return;
+      }
+      loadCSV(file);
     }
   };
 
@@ -29,7 +36,7 @@ const AddNewTable = () => {
       // Read file as text for Papa Parse
       const fileText = await files.text();
       const uint8Array = new TextEncoder().encode(fileText);
-
+      const delim = detectDelimiter(fileText);
       const tableName =
         "tbl_" +
         files.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_]/g, "_");
@@ -39,7 +46,7 @@ const AddNewTable = () => {
       await db!.registerFileBuffer(files.name, uint8Array);
 
       await connection.query(
-        `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${files.name}', header=true)`
+        `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${files.name}', header=true, delim='${delim}')`
       );
 
       const schemaQuery = await connection.query(`DESCRIBE "${tableName}"`);

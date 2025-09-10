@@ -57,3 +57,22 @@ export const loadCSV = async (files: File) => {
     throw error;
   }
 };
+
+export function detectDelimiter(csvText, sample_size = 1000) {
+  const sample = csvText.slice(0, sample_size);
+  const delimiters = [",", ";", "\t", "|"];
+
+  let maxCount = 0;
+  let bestDelimiter = ",";
+
+  delimiters.forEach((delimiter) => {
+    const count = (sample.match(new RegExp("\\" + delimiter, "g")) || [])
+      .length;
+    if (count > maxCount) {
+      maxCount = count;
+      bestDelimiter = delimiter;
+    }
+  });
+
+  return bestDelimiter;
+}

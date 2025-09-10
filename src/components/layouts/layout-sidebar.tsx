@@ -6,25 +6,24 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { match } from "ts-pattern";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "../sidebar/app-sidebar";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import SQLEditor from "../modules/sql-editor";
-import OutputData from "../modules/output-data";
-import useTableStore from "@/store/table";
 import useQuerryStore from "@/store/querry";
+import useTableStore from "@/store/table";
+import { match } from "ts-pattern";
 import ErrorQuerry from "../modules/error-querry";
+import ShowListResult from "../modules/show-list-result";
+import SQLEditor from "../modules/sql-editor";
+import { AppSidebar } from "../sidebar/app-sidebar";
 
 export default function Page() {
   const { currentShowingDataMultiple, currentShowingHeadersMultiple } =
@@ -75,41 +74,14 @@ export default function Page() {
                         })
                         .otherwise(() => {
                           return (
-                            <div className="w-full h-full flex flex-col">
-                              <Tabs
-                                defaultValue="data-0"
-                                className="w-full h-full flex flex-col"
-                              >
-                                <TabsList className="w-full flex shrink-0">
-                                  {currentShowingHeadersMultiple.map(
-                                    (_, index) => (
-                                      <TabsTrigger
-                                        key={index}
-                                        value={`data-${index}`}
-                                      >
-                                        Result {index + 1}
-                                      </TabsTrigger>
-                                    )
-                                  )}
-                                </TabsList>
-                                {currentShowingDataMultiple.map(
-                                  (data, index) => (
-                                    <TabsContent
-                                      key={index}
-                                      value={`data-${index}`}
-                                      className="flex-1 min-h-0 overflow-auto"
-                                    >
-                                      <OutputData
-                                        data={data}
-                                        headers={
-                                          currentShowingHeadersMultiple[index]
-                                        }
-                                      />
-                                    </TabsContent>
-                                  )
-                                )}
-                              </Tabs>
-                            </div>
+                            <ShowListResult
+                              currentShowingHeadersMultiple={
+                                currentShowingHeadersMultiple
+                              }
+                              currentShowingDataMultiple={
+                                currentShowingDataMultiple
+                              }
+                            />
                           );
                         });
                     })}
