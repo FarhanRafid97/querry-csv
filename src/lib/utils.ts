@@ -58,7 +58,7 @@ export const loadCSV = async (files: File) => {
   }
 };
 
-export function detectDelimiter(csvText, sample_size = 1000) {
+export function detectDelimiter(csvText: string, sample_size = 1000) {
   const sample = csvText.slice(0, sample_size);
   const delimiters = [",", ";", "\t", "|"];
 
