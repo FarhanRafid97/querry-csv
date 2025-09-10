@@ -54,7 +54,7 @@ function CSVDuckDBReader() {
       const baseName = files.name
         .replace(/\.[^/.]+$/, "")
         .replace(/[^a-zA-Z0-9_]/g, "_");
-      const tableName = `csv_${baseName}`;
+      const tableName = files.name;
 
       await connection.query(`DROP TABLE IF EXISTS "${tableName}"`);
 
@@ -63,7 +63,9 @@ function CSVDuckDBReader() {
       // Drop table if exists
 
       // Get schema information
-      const schemaQuery = await connection.query(`DESCRIBE "${tableName}"`);
+      const schemaQuery = await connection.query(
+        `DESCRIBE read_csv_auto("${tableName}", header=True)`
+      );
       const schemaResult = schemaQuery.toArray();
       const columnNames = schemaResult.map(
         (row: { column_name: string }) => row.column_name
@@ -79,7 +81,7 @@ function CSVDuckDBReader() {
       setSelectedTable(tableName);
 
       // Get first 10 rows for preview
-      const defaultQuerry = `SELECT * FROM "${tableName}" LIMIT 10`;
+      const defaultQuerry = `SELECT * FROM read_csv_auto("${tableName}", header=True) LIMIT 10`;
       const dataQuery = await connection.query(defaultQuerry);
       console.log("ini dataQuery");
       setCustomQuery(defaultQuerry);

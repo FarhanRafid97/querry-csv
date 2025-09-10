@@ -2,7 +2,6 @@ import type {
   AsyncDuckDBInstance,
   DuckDBModule,
   DuckDBStore,
-  TableMetaData,
 } from "@/type/duckdb-state-type";
 import * as duckdb from "@duckdb/duckdb-wasm";
 import { useEffect } from "react";
@@ -48,14 +47,10 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
   isInitialized: false,
 
   setError: (error: string) => set({ error: error }),
-  setListTable: (listTable: Map<string, TableMetaData>) =>
-    set({ listTable: listTable }),
 
   setCurrentShowingData: (currentShowingData: object[]) =>
     set({ currentShowingData: currentShowingData }),
 
-  setSelectedTable: (selectedTable: TableMetaData | null) =>
-    set({ selectedTable: selectedTable }),
   // Actions
   initialize: async () => {
     const { db, loading, isInitialized } = get();
@@ -78,7 +73,6 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
         loading: false,
         error: null,
         isInitialized: true,
-        listTable: new Map(),
         currentShowingData: [],
       });
 

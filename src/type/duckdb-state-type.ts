@@ -6,19 +6,13 @@ export type DuckDBConnection = Awaited<
   ReturnType<AsyncDuckDBInstance["connect"]>
 >;
 
-export interface TableMetaData {
-  label: string;
-  columns: string[];
-  total_data: number;
-}
 export interface DuckDBState {
   db: AsyncDuckDBInstance | null;
   connection: DuckDBConnection | null;
   loading: boolean;
   error: string | null;
   isInitialized: boolean;
-  selectedTable: TableMetaData | null;
-  listTable: Map<string, TableMetaData>;
+
   currentShowingData: object[];
 }
 
@@ -28,9 +22,6 @@ export interface DuckDBActions {
   executeQuery: (query: string) => Promise<any>;
   closeConnection: () => Promise<void>;
   setError: (error: string) => void;
-  setListTable: (listTable: Map<string, TableMetaData>) => void;
-  setCurrentShowingData: (currentShowingData: object[]) => void;
-  setSelectedTable: (selectedTable: TableMetaData | null) => void;
 }
 
 export type DuckDBStore = DuckDBState & DuckDBActions;
