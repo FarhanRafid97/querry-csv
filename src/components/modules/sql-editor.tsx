@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
-import { CodeEditor } from "../ui/code-editor";
-import type { OnMount } from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
 import { getKeyCombo } from "@/lib/utils";
 import { useDuckDBStore } from "@/store/duckdb";
 import useQuerryStore from "@/store/querry";
 import useTableStore from "@/store/table";
+import type { OnMount } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
+import { useRef } from "react";
+import { CodeEditor } from "../ui/code-editor";
 
 const SQLEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -48,7 +48,14 @@ const SQLEditor = () => {
           console.log("queryToExecute is empty or same as executedQuerry");
           return;
         }
-        const splitquerry = queryToExecute.split(";");
+        // Remove line comments (--) and ignore lines that are only comments
+        const cleanQuerry = queryToExecute
+          .split("\n")
+          .filter((line) => !line.trim().startsWith("//"))
+          .join("\n");
+        console.log(cleanQuerry);
+
+        const splitquerry = cleanQuerry.split(";");
         const multipleData: [][] = [];
         const multipleHeaders: [][] = [];
         splitquerry.forEach(async (querry) => {

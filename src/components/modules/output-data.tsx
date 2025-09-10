@@ -19,7 +19,7 @@ const OutputData = ({ data, headers }: { data: [][]; headers: string[] }) => {
                   {headers.map((header, idx) => (
                     <TableHead
                       key={idx}
-                      className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b"
+                      className="px-4 py-2 text-left text-xs font-medium text-gray-700 border-b"
                     >
                       {header}
                     </TableHead>
@@ -39,7 +39,7 @@ const OutputData = ({ data, headers }: { data: [][]; headers: string[] }) => {
                       ) => (
                         <TableCell
                           key={cellIndex}
-                          className="px-4 py-2 text-sm text-gray-900 border-b"
+                          className="px-4 py-1.5 text-xs text-gray-900 border-b"
                         >
                           {cell !== null ? String(cell) : "NULL"}
                         </TableCell>

@@ -36,75 +36,87 @@ export default function Page() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="max-w-full min-w-0">
-        <div className="w-full h-full">
-          <ResizablePanelGroup direction="vertical">
-            <header className="bg-background flex shrink-0 items-center gap-2 border-b p-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="#">All Inboxes</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Inbox</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </header>
-            <ResizablePanel className="h-[100vh]">
-              <div>
-                <SQLEditor />
-              </div>
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel>
-              <div>
-                {match(!!errorQuerry)
-                  .with(true, () => <ErrorQuerry errorQuerry={errorQuerry} />)
-                  .otherwise(() => {
-                    return match(currentShowingHeadersMultiple.length)
-                      .with(0, () => {
-                        return <div>No data</div>;
-                      })
-                      .otherwise(() => {
-                        return (
-                          <div className="w-full h-full">
-                            <Tabs
-                              defaultValue="data-0"
-                              className="w-full  flex"
-                            >
-                              <TabsList className="w-full  flex">
-                                {currentShowingHeadersMultiple.map(
-                                  (_, index) => (
-                                    <TabsTrigger value={`data-${index}`}>
-                                      Result {index + 1}
-                                    </TabsTrigger>
+        <div className="w-full h-screen flex flex-col">
+          <header className="bg-background flex shrink-0 items-center gap-2 border-b p-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">All Inboxes</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Inbox</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+
+          <div className="flex-1 min-h-0">
+            <ResizablePanelGroup direction="vertical" className="h-full">
+              <ResizablePanel defaultSize={50} className="min-h-0">
+                <div className="h-full">
+                  <SQLEditor />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel defaultSize={50} className="min-h-0">
+                <div className="h-full overflow-hidden flex flex-col">
+                  {match(!!errorQuerry)
+                    .with(true, () => <ErrorQuerry errorQuerry={errorQuerry} />)
+                    .otherwise(() => {
+                      return match(currentShowingHeadersMultiple.length)
+                        .with(0, () => {
+                          return <div className="p-4">No data</div>;
+                        })
+                        .otherwise(() => {
+                          return (
+                            <div className="w-full h-full flex flex-col">
+                              <Tabs
+                                defaultValue="data-0"
+                                className="w-full h-full flex flex-col"
+                              >
+                                <TabsList className="w-full flex shrink-0">
+                                  {currentShowingHeadersMultiple.map(
+                                    (_, index) => (
+                                      <TabsTrigger
+                                        key={index}
+                                        value={`data-${index}`}
+                                      >
+                                        Result {index + 1}
+                                      </TabsTrigger>
+                                    )
+                                  )}
+                                </TabsList>
+                                {currentShowingDataMultiple.map(
+                                  (data, index) => (
+                                    <TabsContent
+                                      key={index}
+                                      value={`data-${index}`}
+                                      className="flex-1 min-h-0 overflow-auto"
+                                    >
+                                      <OutputData
+                                        data={data}
+                                        headers={
+                                          currentShowingHeadersMultiple[index]
+                                        }
+                                      />
+                                    </TabsContent>
                                   )
                                 )}
-                              </TabsList>
-                              {currentShowingDataMultiple.map((data, index) => (
-                                <TabsContent value={`data-${index}`}>
-                                  <OutputData
-                                    data={data}
-                                    headers={
-                                      currentShowingHeadersMultiple[index]
-                                    }
-                                  />
-                                </TabsContent>
-                              ))}
-                            </Tabs>
-                          </div>
-                        );
-                      });
-                  })}
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
+                              </Tabs>
+                            </div>
+                          );
+                        });
+                    })}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
