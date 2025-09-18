@@ -1,102 +1,134 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogWrapperContent,
+} from "@/components/ui/dialog";
 import { useDuckDBStore } from "@/store/duckdb";
-import { PlusIcon } from "@radix-ui/react-icons";
-import React, { useRef } from "react";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { toast } from "sonner";
-import type { TableMetaData } from "@/type/table";
 import useTableStore from "@/store/table";
-import { detectDelimiter } from "@/lib/utils";
+import { PlusIcon } from "@radix-ui/react-icons";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from "../ui/dropzone";
+import ListUploadFile from "./table-duckdb/list-upload-file";
+import { loadCSV } from "@/lib/duckdb-util";
+import { toast } from "sonner";
+import { MAX_FILE_SIZE } from "@/lib/constant";
 
 const AddNewTable = () => {
-  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [listFiles, setListFiles] = useState<File[]>([]);
+  const [open, setOpen] = useState(false);
+  // Handle file selection
+  console.log(listFiles);
+  const handleDrop = (files: File[]) => {
+    console.log(files);
+    setListFiles(files);
+  };
+
+  const [isloading, setIsloading] = useState(false);
+
   const { db, connection } = useDuckDBStore();
   const { listTable, setListTable } = useTableStore();
 
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-      if (file.size > maxSize) {
-        toast.error("CSV file size exceeds 5MB limit.");
-        return;
+  // Get file type icon based on file extension
+  const handleLoadFile = async () => {
+    setIsloading(true);
+    const newMap = new Map(listTable);
+
+    setListTable(newMap);
+
+    for (const file of listFiles) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size is too large: " + file.name);
+        continue;
       }
-      loadCSV(file);
-    }
-  };
-
-  // Load CSV into DuckDB
-  const loadCSV = async (files: File) => {
-    if (!files || !connection) {
-      return;
-    }
-
-    try {
-      // Read file as text for Papa Parse
-      const fileText = await files.text();
-      const uint8Array = new TextEncoder().encode(fileText);
-      const delim = detectDelimiter(fileText);
-      const tableName =
-        "tbl_" +
-        files.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_]/g, "_");
-
-      await connection.query(`DROP TABLE IF EXISTS "${tableName}"`);
-
-      await db!.registerFileBuffer(files.name, uint8Array);
-
-      await connection.query(
-        `CREATE TABLE "${tableName}" AS SELECT * FROM read_csv_auto('${files.name}', header=true, delim='${delim}')`
+      const { tableName, metadataTable } = await loadCSV(
+        file,
+        connection!,
+        db!
       );
-
-      const schemaQuery = await connection.query(`DESCRIBE "${tableName}"`);
-      const schemaResult = schemaQuery.toArray();
-      const columnNames = schemaResult.map(
-        (row: { column_name: string }) => row.column_name
-      );
-      const metadataTable: TableMetaData = {
-        label: tableName,
-        columns: columnNames,
-        total_data: 0,
-      };
-
-      const newMap = new Map(listTable);
+      if (metadataTable.columns.length === 0) {
+        toast.error("File loaded failed: " + file.name);
+        continue;
+      }
       newMap.set(tableName, metadataTable);
-      setListTable(newMap);
-
-      toast.success("CSV loaded successfully with table name: " + tableName);
-    } catch (err) {
-      console.error("CSV loading error:", err);
-      toast.error("CSV loading error: " + err);
+      toast.success("File loaded successfully: " + tableName);
     }
+    setListTable(newMap);
+    setListFiles([]);
+    setOpen(false);
+    setIsloading(false);
   };
 
   return (
     <div>
-      {" "}
-      <input
-        className="hidden"
-        readOnly
-        data-test="upload-file-input"
-        accept=".csv"
-        ref={inputFileRef}
-        onChange={handleFileChange}
-        type="file"
-      />{" "}
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
           <Button
-            className="cursor-pointer p-1 h-auto w-fit  has-[>svg]:px-1"
-            onClick={() => {
-              inputFileRef.current?.click();
-            }}
             variant="ghost"
+            size="icon"
+            className="flex items-center gap-2 text-xs cursor-pointer"
           >
             <PlusIcon />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent sideOffset={-10}>Add new file</TooltipContent>
-      </Tooltip>
+        </DialogTrigger>
+        <DialogContent
+          onCloseAutoFocus={() => {
+            // reset()
+            setListFiles([]);
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Tambahkan Kategori</DialogTitle>
+            <DialogDescription>
+              Tambahkan kategori baru untuk kategori artikel Anda.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogWrapperContent>
+            <Dropzone
+              disabled={isloading}
+              className="cursor-pointer"
+              maxFiles={10}
+              accept={{ "image/*": [], "text/csv": [".csv"] }}
+              onDrop={handleDrop}
+              src={listFiles}
+              onError={console.error}
+            >
+              <DropzoneEmptyState />
+              <DropzoneContent />
+            </Dropzone>
+            {listFiles.length > 0 && (
+              <div className="mt-4">
+                <ListUploadFile listFiles={listFiles} isLoading={isloading} />
+              </div>
+            )}
+          </DialogWrapperContent>
+          <DialogFooter className="sm:justify-between">
+            <Button
+              disabled={isloading}
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleLoadFile}
+              className="gap-2"
+              disabled={isloading}
+            >
+              {isloading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>{" "}
     </div>
   );
 };

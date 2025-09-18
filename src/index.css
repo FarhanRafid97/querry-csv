@@ -12,6 +12,7 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-vercel-seconday: oklch(0.9851 0 0);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -109,21 +110,281 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+.shadow-manual {
+  box-shadow: 0 0.5rem 0.5rem -0.5rem rgba(0, 0, 0, 0.2) !important;
+}
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+    font-family: "Inter", sans-serif;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-muted/40  text-foreground;
   }
 }
 
-.wrapper-popover-linear {
-  box-shadow: var(--popover-box-shadow) !important;
-  border: 0.5px solid var(--popover-border-color) !important;
+.my-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: blue transparent transparent transparent;
 }
-.wrapper-box-linear {
-  box-shadow: var(--box-box-shadow) !important;
-  border: 0.5px solid var(--box-border-color) !important;
+
+.gardient-title {
+  background: -webkit-linear-gradient(15deg, #361d4f, #1a08e4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  @apply py-2  font-bold;
+}
+
+.gardient-title-page {
+  background: -webkit-linear-gradient(15deg, #1a08e4, #b081df);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  @apply py-2  font-bold;
+}
+
+.PopoverContent {
+  width: var(--radix-popover-trigger-width);
+  max-height: var(--radix-popover-content-available-height);
+}
+
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+pre {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Remove Safari input shadow on mobile */
+input[type="text"],
+input[type="email"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: 10px;
+  width: 1.5px;
+
+  padding: 5px 0px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.resizer.isResizing {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .resizer {
+    opacity: 0;
+  }
+
+  *:hover > .resizer {
+    opacity: 1;
+  }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@media print {
+  html,
+  body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  * {
+    box-shadow: none !important;
+  }
+}
+
+.CollapsibleContent {
+  overflow: hidden;
+}
+.CollapsibleContent[data-state="open"] {
+  animation: slideDown 150ms ease-out;
+}
+.CollapsibleContent[data-state="closed"] {
+  animation: slideUp 150ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.tiptap p.is-empty::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  background-color: red;
+
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap p.is-empty:focus {
+  background-color: red;
+}
+
+.wrapper-card-with-inner {
+  background-color: rgb(255, 255, 255);
+  max-width: 100%;
+  opacity: 1;
+
+  width: 100%;
+  will-change: auto;
+}
+
+.nice-box-shadow {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 26px 56px 0px;
+}
+
+/* Navbar transition fixes */
+.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  transition: all 0.3s ease;
+  will-change: transform;
+}
+
+/* Prevent layout shifts during page transitions */
+.page-transition {
+  min-height: 100vh;
+  transition: opacity 0.3s ease;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent content jumping during navbar transitions */
+body {
+  overflow-x: hidden;
+}
+
+/* Custom animations for carousel hero */
+
+/* Custom Swiper pagination styles */
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: white !important;
+  transform: scale(1.2) !important;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Professional sidebar scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
+  background-clip: content-box;
+}
+
+.scrollbar-thumb-border {
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.scrollbar-track-transparent {
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.prose span.icon-link {
+  @apply before:content-['#'] before:absolute before:-right-6 before:top-1 before:px-1 before:opacity-0 before:transition before:text-[0.9em] before:text-orange-600;
+}
+
+.prose :is(h2, h3, h4, h5, h6) {
+  @apply relative max-w-max;
+}
+
+.prose :is(h2, h3, h4, h5, h6):hover span.icon-link::before {
+  @apply opacity-100;
 }
