@@ -84,20 +84,26 @@ const AddNewTable = () => {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Tambahkan Kategori</DialogTitle>
-            <DialogDescription>
-              Tambahkan kategori baru untuk kategori artikel Anda.
-            </DialogDescription>
+            <DialogTitle>Upload File</DialogTitle>
+            <DialogDescription>Add new table from file</DialogDescription>
           </DialogHeader>
           <DialogWrapperContent>
             <Dropzone
               disabled={isloading}
               className="cursor-pointer"
-              maxFiles={10}
-              accept={{ "image/*": [], "text/csv": [".csv"] }}
+              maxFiles={5}
+              maxSize={5 * 1024 * 1024} // 5MB in bytes
+              accept={{ "text/csv": [".csv"] }}
               onDrop={handleDrop}
               src={listFiles}
-              onError={console.error}
+              onError={(err) => {
+                console.log(err.message.toLowerCase());
+                if (err.message.toLowerCase().includes("file is larger")) {
+                  toast.error("Max file size is 5MB");
+                } else {
+                  toast.error(err.message);
+                }
+              }}
             >
               <DropzoneEmptyState />
               <DropzoneContent />
@@ -124,7 +130,7 @@ const AddNewTable = () => {
               disabled={isloading}
             >
               {isloading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Simpan
+              Submit
             </Button>
           </DialogFooter>
         </DialogContent>

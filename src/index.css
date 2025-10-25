@@ -75,6 +75,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --popover-box-shadow: lch(0 0 0 / 0.022) 0px 6px 18px,
+    lch(0 0 0 / 0.044) 0px 3px 9px, lch(0 0 0 / 0.044) 0px 1px 1px;
+  --popover-border-color: lch(84.025 0 282.863);
+  --box-box-shadow: lch(0 0 0 / 0.022) 0px 3px 6px -2px,
+    lch(0 0 0 / 0.044) 0px 1px 1px;
+  --box-border-color: lch(83.025 0 282.863);
 }
 
 .dark {
@@ -109,6 +116,13 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --popover-box-shadow: lch(240 0 0 / 0.022) 0px 6px 18px,
+    lch(240 0 0 / 0.044) 0px 3px 9px, lch(240 0 0 / 0.044) 0px 1px 1px;
+  --popover-border-color: hsl(240 3.7% 15.9%);
+  --box-box-shadow: lch(240 0 0 / 0.022) 0px 3px 6px -2px,
+    lch(240 0 0 / 0.044) 0px 1px 1px;
+  --box-border-color: hsl(240 3.7% 15.9%);
 }
 .shadow-manual {
   box-shadow: 0 0.5rem 0.5rem -0.5rem rgba(0, 0, 0, 0.2) !important;
@@ -173,6 +187,19 @@ input[type="email"] {
 
 * {
   box-sizing: border-box;
+
+  .resizer-left {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    left: 10px;
+    width: 1.5px;
+
+    padding: 5px 0px;
+    cursor: col-resize-left;
+    user-select: none;
+    touch-action: none;
+  }
 }
 
 .resizer {
@@ -216,7 +243,8 @@ input[type="number"] {
 @media print {
   html,
   body {
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
@@ -387,4 +415,23 @@ body {
 
 .prose :is(h2, h3, h4, h5, h6):hover span.icon-link::before {
   @apply opacity-100;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.wrapper-popover-linear {
+  box-shadow: var(--popover-box-shadow);
+  border: 0.5px solid var(--popover-border-color);
+}
+.wrapper-box-linear {
+  box-shadow: var(--box-box-shadow);
+  border: 0.5px solid var(--box-border-color);
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

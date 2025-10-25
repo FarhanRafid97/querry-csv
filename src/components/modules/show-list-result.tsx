@@ -1,10 +1,11 @@
 import React, { memo } from "react";
-import OutputData from "./output-data";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
+import TableTanstack from "./result-duckdb/table";
 
 interface ShowListResultProps {
-  currentShowingHeadersMultiple: [][];
-  currentShowingDataMultiple: [][][];
+  currentShowingHeadersMultiple: string[][];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentShowingDataMultiple: any[][][];
 }
 
 const ShowListResult: React.FC<ShowListResultProps> = ({
@@ -39,17 +40,14 @@ const TabContent = ({
   data,
   index,
 }: {
-  heeaders: [];
-  data: [][];
+  heeaders: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[][];
   index: number;
 }) => {
   return (
-    <TabsContent
-      key={index}
-      value={`data-${index}`}
-      className="flex-1 min-h-0 overflow-auto"
-    >
-      <OutputData data={data} headers={heeaders} />
+    <TabsContent key={index} value={`data-${index}`} className="flex-1 min-h-0">
+      <TableTanstack data={data} headers={heeaders} />
     </TabsContent>
   );
 };
