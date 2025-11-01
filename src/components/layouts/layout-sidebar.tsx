@@ -40,7 +40,7 @@ export default function Page() {
   }, [setPanelResize]);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="font-geist-mono">
       <AppSidebar />
       <SidebarInset className="max-w-full min-w-0 ">
         <div className="w-full h-screen flex flex-col">

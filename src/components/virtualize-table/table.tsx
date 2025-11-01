@@ -137,7 +137,7 @@ export function VirtualizeTable({ columns, data }: { columns: ColumnDef<object>[
             className="w-full relative"
             style={{
               display: 'grid',
-              fontFamily: 'var(--font-geist-mono)',
+              fontFamily: 'var(--font-geist)',
               ...columnSizeVars
             }}
           >
