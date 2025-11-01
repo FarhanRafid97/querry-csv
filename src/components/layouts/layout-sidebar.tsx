@@ -4,32 +4,23 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import usePanelResizeStore from "@/store/panel-resize";
-import useQuerryStore from "@/store/querry";
-import useTableStore from "@/store/table";
-import { useCallback, useRef } from "react";
-import { match } from "ts-pattern";
-import ErrorQuerry from "../modules/error-querry";
-import ShowListResult from "../modules/show-list-result";
-import SQLEditor from "../modules/sql-editor";
-import { AppSidebar } from "../sidebar/app-sidebar";
+  BreadcrumbSeparator
+} from '@/components/ui/breadcrumb';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import usePanelResizeStore from '@/store/panel-resize';
+import useQuerryStore from '@/store/querry';
+import useTableStore from '@/store/table';
+import { useCallback, useRef } from 'react';
+import { match } from 'ts-pattern';
+import ErrorQuerry from '../modules/error-querry';
+import ShowListResult from '../modules/show-list-result';
+import SQLEditor from '../modules/sql-editor';
+import { AppSidebar } from '../sidebar/app-sidebar';
 
 export default function Page() {
-  const { currentShowingDataMultiple, currentShowingHeadersMultiple } =
-    useTableStore();
+  const { currentShowingDataMultiple, currentShowingHeadersMultiple } = useTableStore();
   const { errorQuerry } = useQuerryStore();
 
   const { setPanelResize, setPanelOnResize } = usePanelResizeStore();
@@ -43,7 +34,7 @@ export default function Page() {
       }
 
       timeoutRef.current = setTimeout(() => {
-        setPanelResize("resize-result", size, size);
+        setPanelResize('resize-result', size, size);
       }, 50); // Adjust delay as needed
     };
   }, [setPanelResize]);
@@ -55,10 +46,7 @@ export default function Page() {
         <div className="w-full h-screen flex flex-col">
           <header className="bg-background flex shrink-0 items-center gap-2 border-b p-4">
             <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
+            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
@@ -81,8 +69,8 @@ export default function Page() {
               </ResizablePanel>
               <ResizableHandle
                 onDragging={(e) => {
-                  console.log("onDragging", e);
-                  setPanelOnResize("resize-result", e);
+                  console.log('onDragging', e);
+                  setPanelOnResize('resize-result', e);
                 }}
               />
               <ResizablePanel
@@ -106,12 +94,8 @@ export default function Page() {
                         .otherwise(() => {
                           return (
                             <ShowListResult
-                              currentShowingHeadersMultiple={
-                                currentShowingHeadersMultiple
-                              }
-                              currentShowingDataMultiple={
-                                currentShowingDataMultiple
-                              }
+                              currentShowingHeadersMultiple={currentShowingHeadersMultiple}
+                              currentShowingDataMultiple={currentShowingDataMultiple}
                             />
                           );
                         });

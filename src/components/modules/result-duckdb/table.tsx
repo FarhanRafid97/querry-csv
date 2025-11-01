@@ -1,12 +1,13 @@
-import { TableCellCostume } from "@/components/virtualize-table/CellBaseComp";
-import { VirtualizeTable } from "@/components/virtualize-table/table";
-import { type ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
-import { generateColumns } from "./column";
+import { TableCellCostume } from '@/components/virtualize-table/CellBaseComp';
+import { VirtualizeTable } from '@/components/virtualize-table/table';
+import { type ColumnDef } from '@tanstack/react-table';
+import { useMemo } from 'react';
+import { generateColumns } from './column';
+import { DataTableColumnHeaderComplete } from '@/components/virtualize-table/ColumnHeaderComplete';
 
 export default function TableTanstack({
   data,
-  headers,
+  headers
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any[][];
@@ -34,18 +35,15 @@ export default function TableTanstack({
             columns={
               [
                 {
-                  accessorKey: "No",
-                  size: 50,
-                  enableResizing: false,
+                  accessorKey: 'No',
+                  minSize: 60,
 
-                  header: () => <></>,
-                  cell: ({ row }) => (
-                    <TableCellCostume className="ml-6" id="No">
-                      {row.index + 1}
-                    </TableCellCostume>
+                  header: ({ column, header }) => (
+                    <DataTableColumnHeaderComplete noDropdown column={column} title="No" header={header} />
                   ),
+                  cell: ({ row, column }) => <TableCellCostume id={column.id}>{row.index + 1}</TableCellCostume>
                 },
-                ...columns,
+                ...columns
               ] as ColumnDef<object>[]
             }
           />

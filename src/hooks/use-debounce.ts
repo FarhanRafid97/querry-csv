@@ -1,5 +1,5 @@
-import usePanelResizeStore, { type PanelResize } from "@/store/panel-resize";
-import React from "react";
+import usePanelResizeStore, { type PanelResize } from '@/store/panel-resize';
+import React from 'react';
 
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -17,11 +17,7 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-export function useDebounceResizHeight(
-  height: number,
-  key: PanelResize,
-  delay: number
-): void {
+export function useDebounceResizHeight(height: number, key: PanelResize, delay: number): void {
   const { setPanelResize, panelResize } = usePanelResizeStore();
 
   React.useEffect(() => {

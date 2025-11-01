@@ -1,9 +1,13 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import './styles/font-geist.css';
+@import './styles/font-geist-mono.css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-geist: 'Geist', sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -76,11 +80,9 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  --popover-box-shadow: lch(0 0 0 / 0.022) 0px 6px 18px,
-    lch(0 0 0 / 0.044) 0px 3px 9px, lch(0 0 0 / 0.044) 0px 1px 1px;
+  --popover-box-shadow: lch(0 0 0 / 0.022) 0px 6px 18px, lch(0 0 0 / 0.044) 0px 3px 9px, lch(0 0 0 / 0.044) 0px 1px 1px;
   --popover-border-color: lch(84.025 0 282.863);
-  --box-box-shadow: lch(0 0 0 / 0.022) 0px 3px 6px -2px,
-    lch(0 0 0 / 0.044) 0px 1px 1px;
+  --box-box-shadow: lch(0 0 0 / 0.022) 0px 3px 6px -2px, lch(0 0 0 / 0.044) 0px 1px 1px;
   --box-border-color: lch(83.025 0 282.863);
 }
 
@@ -117,11 +119,10 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  --popover-box-shadow: lch(240 0 0 / 0.022) 0px 6px 18px,
-    lch(240 0 0 / 0.044) 0px 3px 9px, lch(240 0 0 / 0.044) 0px 1px 1px;
-  --popover-border-color: hsl(240 3.7% 15.9%);
-  --box-box-shadow: lch(240 0 0 / 0.022) 0px 3px 6px -2px,
+  --popover-box-shadow: lch(240 0 0 / 0.022) 0px 6px 18px, lch(240 0 0 / 0.044) 0px 3px 9px,
     lch(240 0 0 / 0.044) 0px 1px 1px;
+  --popover-border-color: hsl(240 3.7% 15.9%);
+  --box-box-shadow: lch(240 0 0 / 0.022) 0px 3px 6px -2px, lch(240 0 0 / 0.044) 0px 1px 1px;
   --box-border-color: hsl(240 3.7% 15.9%);
 }
 .shadow-manual {
@@ -131,7 +132,6 @@
 @layer base {
   * {
     @apply border-border;
-    font-family: "Inter", sans-serif;
   }
   body {
     @apply bg-muted/40  text-foreground;
@@ -139,7 +139,8 @@
 }
 
 .my-tooltip::after {
-  content: "";
+  content: '';
+
   position: absolute;
   top: 100px;
   left: 50%;
@@ -178,8 +179,8 @@ pre {
 }
 
 /* Remove Safari input shadow on mobile */
-input[type="text"],
-input[type="email"] {
+input[type='text'],
+input[type='email'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -192,10 +193,10 @@ input[type="email"] {
     position: absolute;
     top: 0;
     height: 100%;
-    left: 10px;
+    left: 1px;
     width: 1.5px;
 
-    padding: 5px 0px;
+    padding: 0px 0px;
     cursor: col-resize-left;
     user-select: none;
     touch-action: none;
@@ -206,8 +207,8 @@ input[type="email"] {
   position: absolute;
   top: 0;
   height: 100%;
-  right: 10px;
-  width: 1.5px;
+  right: 0px;
+  width: 2.5px;
 
   padding: 5px 0px;
   cursor: col-resize;
@@ -235,7 +236,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -243,6 +244,7 @@ input[type="number"] {
 @media print {
   html,
   body {
+    font-family: var(--font-geist);
     height: 100vh;
     width: 100vw;
     margin: 0 !important;
@@ -257,10 +259,10 @@ input[type="number"] {
 .CollapsibleContent {
   overflow: hidden;
 }
-.CollapsibleContent[data-state="open"] {
+.CollapsibleContent[data-state='open'] {
   animation: slideDown 150ms ease-out;
 }
-.CollapsibleContent[data-state="closed"] {
+.CollapsibleContent[data-state='closed'] {
   animation: slideUp 150ms ease-out;
 }
 
@@ -434,4 +436,11 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+[data-slot='grid-cell-content'].line-clamp-2 {
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

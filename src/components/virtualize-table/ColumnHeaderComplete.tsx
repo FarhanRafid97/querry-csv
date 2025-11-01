@@ -1,86 +1,75 @@
-import type { Column, Header } from "@tanstack/react-table";
+import type { Column, Header } from '@tanstack/react-table';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu-v2";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu-v2';
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   CaretSortIcon,
   DrawingPinFilledIcon,
   DrawingPinIcon,
-  EyeNoneIcon,
-} from "@radix-ui/react-icons";
+  EyeNoneIcon
+} from '@radix-ui/react-icons';
 
-import type { ReactNode } from "react";
-import { match } from "ts-pattern";
+import type { ReactNode } from 'react';
+import { match } from 'ts-pattern';
 
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
   header: Header<TData, TValue>;
   children?: ReactNode;
+  noDropdown?: boolean;
 }
 
 export function DataTableColumnHeaderComplete<TData, TValue>({
   column,
   title,
-  className,
+
   header,
-  children,
+  noDropdown = false
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  if (!column.getCanSort()) {
+  if (noDropdown) {
     return (
-      <div className={cn("text-sm font-medium text-gray-700", className)}>
-        <span>{title}</span>
-        <span className={cn("px-2")}>{children}</span>
+      <div
+        className="flex justify-between items-center bg-accent/50 h-full gap-2 w-full  data-[state=open]:bg-muted/90 px-2"
+        style={{
+          width: `calc(var(--header-${header.id}-size) * 1px - 0px)`
+        }}
+      >
+        <div className="truncate overflow-hidden text-start">
+          <span className="text-sm  font-[400] text-start text-black-shadow ">{title}</span>
+        </div>
       </div>
     );
   }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex justify-start items-center h-full gap-2"
+          className="flex justify-between items-center bg-accent/50 h-full gap-2 w-full  data-[state=open]:bg-muted/90 px-2"
           style={{
-            width: `calc(var(--header-${header.id}-size) * 1px - 16px)`,
+            width: `calc(var(--header-${header.id}-size) * 1px )`
           }}
         >
           <div className="truncate overflow-hidden text-start">
-            <span className="text-[12px]  font-[600] text-start text-black-shadow ">
-              {title}
-            </span>
+            <span className="text-sm font-[400]  text-start text-black-shadow ">{title}</span>
           </div>
-          {match(column.getIsSorted())
-            .with("desc", () => (
-              <ArrowDownIcon
-                width={14}
-                height={14}
-                className=" text-gray-700"
-              />
-            ))
-            .with("asc", () => (
-              <ArrowUpIcon width={14} height={14} className=" text-gray-700" />
-            ))
-            .otherwise(() => (
-              <CaretSortIcon
-                width={14}
-                height={14}
-                className=" text-gray-400"
-              />
-            ))}
+          <div className="min-w-[14px]">
+            {match(column.getIsSorted())
+              .with('desc', () => <ArrowDownIcon width={14} height={14} className=" text-gray-700" />)
+              .with('asc', () => <ArrowUpIcon width={14} height={14} className=" text-gray-700" />)
+              .otherwise(() => (
+                <CaretSortIcon width={14} height={14} className=" text-gray-400" />
+              ))}
+          </div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="start"
-        className=" border-gray-200 p-1 min-w-[8rem]"
-      >
+      <DropdownMenuContent align="start" className=" border-gray-200 min-w-[15rem]">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <ArrowUpIcon />
           Sort asc
@@ -102,10 +91,10 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
                 Unpin column
               </DropdownMenuItem>
             ) : null}
-            {header.column.getIsPinned() !== "right" ? (
+            {header.column.getIsPinned() !== 'right' ? (
               <DropdownMenuItem
                 onClick={() => {
-                  header.column.pin("right");
+                  header.column.pin('right');
                 }}
               >
                 <DrawingPinFilledIcon />
