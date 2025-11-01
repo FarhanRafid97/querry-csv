@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction } from 'react';
+import { type Dispatch, type SetStateAction } from 'react';
 import { DataGridRowHeightMenu } from './select-column-height';
 import type { Table } from '@tanstack/react-table';
 import SearchTable from './search-table';
