@@ -38,11 +38,12 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
       <div
         className="flex justify-between items-center bg-accent/50 h-full gap-2 w-full  data-[state=open]:bg-muted/90 px-2"
         style={{
-          width: `calc(var(--header-${header.id}-size) * 1px - 0px)`
+          minWidth: `calc(var(--header-${header.id}-size) * 1px - 0px)`,
+          width: '100%'
         }}
       >
         <div className="truncate overflow-hidden text-start">
-          <span className="text-sm  font-[400] text-start text-black-shadow ">{title}</span>
+          <span className="text-sm  font-normal text-start text-black-shadow ">{title}</span>
         </div>
       </div>
     );
@@ -53,11 +54,12 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
         <button
           className="flex justify-between items-center bg-accent/50 h-full gap-2 w-full  data-[state=open]:bg-muted/90 px-2"
           style={{
-            width: `calc(var(--header-${header.id}-size) * 1px )`
+            minWidth: `calc(var(--header-${header.id}-size) * 1px )`,
+            width: '100%'
           }}
         >
           <div className="truncate overflow-hidden text-start">
-            <span className="text-sm font-[400]  text-start text-black-shadow ">{title}</span>
+            <span className="text-sm font-normal  text-start text-black-shadow ">{title}</span>
           </div>
           <div className="min-w-[14px]">
             {match(column.getIsSorted())

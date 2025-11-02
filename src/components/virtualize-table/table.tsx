@@ -137,17 +137,13 @@ export function VirtualizeTable({ columns, data }: { columns: ColumnDef<object>[
             className="w-full relative"
             style={{
               display: 'grid',
-              fontFamily: 'var(--font-geist)',
+              minWidth: '100%',
               ...columnSizeVars
             }}
           >
             <th className=" sticky top-0  z-50">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className={cn(`bg-red-400 `)}
-                  style={{ display: 'flex', width: '100%', height: heightHeader }}
-                >
+                <tr key={headerGroup.id} style={{ display: 'flex', width: '100%', height: heightHeader }}>
                   {headerGroup.headers.map((header) => {
                     const isPined = header.column.getIsPinned();
                     return (
@@ -161,7 +157,8 @@ export function VirtualizeTable({ columns, data }: { columns: ColumnDef<object>[
                         )}
                         style={{
                           ...getCommonPinningStyles(header.column),
-                          width: `calc(var(--header-${header?.id}-size) * 1px)`
+                          minWidth: `calc(var(--header-${header?.id}-size) * 1px)`,
+                          flex: 1
                         }}
                       >
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -219,7 +216,7 @@ function TableBodyWrapper({ table, heightCell, tableContainerRef }: TableBodyWra
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 5
+    overscan: 3
   });
 
   React.useLayoutEffect(() => {
@@ -303,7 +300,8 @@ function TableBodyRow({ row, virtualRow, rowVirtualizer, heightCell }: TableBody
             )}
             style={{
               ...getCommonPinningStyles(cell.column),
-              width: `calc(var(--col-${cell.column.id}-size) * 1px) `,
+              minWidth: `calc(var(--col-${cell.column.id}-size) * 1px) `,
+              flex: 1,
               height: heightCell - 6
             }}
           >

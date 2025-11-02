@@ -1,9 +1,9 @@
-import { TableCellCostume } from '@/components/virtualize-table/CellBaseComp';
+import { TableCellCostume } from '@/components/virtualize-table/cell';
 import { VirtualizeTable } from '@/components/virtualize-table/table';
 import { type ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { generateColumns } from './column';
-import { DataTableColumnHeaderComplete } from '@/components/virtualize-table/ColumnHeaderComplete';
+import { DataTableColumnHeaderComplete } from '@/components/virtualize-table/header';
 
 export default function TableTanstack({
   data,

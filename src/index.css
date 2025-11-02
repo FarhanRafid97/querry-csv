@@ -132,6 +132,7 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: var(--font-geist-mono);
   }
   body {
     @apply bg-muted/40  text-foreground;
@@ -186,21 +187,17 @@ input[type='email'] {
   appearance: none;
 }
 
-* {
-  box-sizing: border-box;
+.resizer-left {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  left: 1px;
+  width: 1.5px;
 
-  .resizer-left {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    left: 1px;
-    width: 1.5px;
-
-    padding: 0px 0px;
-    cursor: col-resize-left;
-    user-select: none;
-    touch-action: none;
-  }
+  padding: 0px 0px;
+  cursor: col-resize-left;
+  user-select: none;
+  touch-action: none;
 }
 
 .resizer {
@@ -244,7 +241,6 @@ input[type='number'] {
 @media print {
   html,
   body {
-    font-family: var(--font-geist-mono);
     height: 100vh;
     width: 100vw;
     margin: 0 !important;
