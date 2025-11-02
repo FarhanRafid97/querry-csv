@@ -1,6 +1,6 @@
-import React, { memo } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
-import TableTanstack from "./result-duckdb/table";
+import React, { memo } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+import TableTanstack from './result-duckdb/table';
 
 interface ShowListResultProps {
   currentShowingHeadersMultiple: string[][];
@@ -10,9 +10,9 @@ interface ShowListResultProps {
 
 const ShowListResult: React.FC<ShowListResultProps> = ({
   currentShowingHeadersMultiple,
-  currentShowingDataMultiple,
+  currentShowingDataMultiple
 }) => {
-  console.log("ini currentShowingDataMultiple", currentShowingDataMultiple);
+  console.log('ini currentShowingDataMultiple', currentShowingDataMultiple);
   return (
     <div className="w-full h-full flex flex-col">
       <Tabs defaultValue="data-0" className="w-full h-full flex flex-col">
@@ -24,11 +24,7 @@ const ShowListResult: React.FC<ShowListResultProps> = ({
           ))}
         </TabsList>
         {currentShowingDataMultiple.map((data, index) => (
-          <MemoizedTabContent
-            heeaders={currentShowingHeadersMultiple[index]}
-            data={data}
-            index={index}
-          />
+          <MemoizedTabContent key={index} heeaders={currentShowingHeadersMultiple[index]} data={data} index={index} />
         ))}
       </Tabs>
     </div>
@@ -38,7 +34,7 @@ const ShowListResult: React.FC<ShowListResultProps> = ({
 const TabContent = ({
   heeaders,
   data,
-  index,
+  index
 }: {
   heeaders: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
