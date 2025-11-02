@@ -6,19 +6,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogWrapperContent,
-} from "@/components/ui/dialog";
-import { useDuckDBStore } from "@/store/duckdb";
-import useTableStore from "@/store/table";
-import { PlusIcon } from "@radix-ui/react-icons";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "../ui/button";
-import { Dropzone, DropzoneContent, DropzoneEmptyState } from "../ui/dropzone";
-import ListUploadFile from "./table-duckdb/list-upload-file";
-import { loadCSV } from "@/lib/duckdb-util";
-import { toast } from "sonner";
-import { MAX_FILE_SIZE } from "@/lib/constant";
+  DialogWrapperContent
+} from '@/components/ui/dialog';
+import { useDuckDBStore } from '@/store/duckdb';
+import useTableStore from '@/store/table';
+import { PlusIcon } from '@radix-ui/react-icons';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from '../ui/dropzone';
+import ListUploadFile from './table-duckdb/list-upload-file';
+import { loadFile } from '@/lib/duckdb-util';
+import { toast } from 'sonner';
+import { MAX_FILE_SIZE } from '@/lib/constant';
 
 const AddNewTable = () => {
   const [listFiles, setListFiles] = useState<File[]>([]);
@@ -44,20 +44,15 @@ const AddNewTable = () => {
 
     for (const file of listFiles) {
       if (file.size > MAX_FILE_SIZE) {
-        toast.error("File size is too large: " + file.name);
+        toast.error('File size is too large: ' + file.name);
         continue;
       }
-      const { tableName, metadataTable } = await loadCSV(
-        file,
-        connection!,
-        db!
-      );
+      const { tableName, metadataTable } = await loadFile(file, connection!, db!);
       if (metadataTable.columns.length === 0) {
-        toast.error("File loaded failed: " + file.name);
+        toast.error('File loaded failed: ' + file.name);
         continue;
       }
       newMap.set(tableName, metadataTable);
-      toast.success("File loaded successfully: " + tableName);
     }
     setListTable(newMap);
     setListFiles([]);
@@ -69,11 +64,7 @@ const AddNewTable = () => {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="flex items-center gap-2 text-xs cursor-pointer"
-          >
+          <Button variant="ghost" size="icon" className="flex items-center gap-2 text-xs cursor-pointer">
             <PlusIcon />
           </Button>
         </DialogTrigger>
@@ -93,13 +84,16 @@ const AddNewTable = () => {
               className="cursor-pointer"
               maxFiles={5}
               maxSize={5 * 1024 * 1024} // 5MB in bytes
-              accept={{ "text/csv": [".csv"] }}
+              accept={{
+                'text/csv': ['.csv'],
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx', '.xls']
+              }}
               onDrop={handleDrop}
               src={listFiles}
               onError={(err) => {
                 console.log(err.message.toLowerCase());
-                if (err.message.toLowerCase().includes("file is larger")) {
-                  toast.error("Max file size is 5MB");
+                if (err.message.toLowerCase().includes('file is larger')) {
+                  toast.error('Max file size is 5MB');
                 } else {
                   toast.error(err.message);
                 }
@@ -115,26 +109,16 @@ const AddNewTable = () => {
             )}
           </DialogWrapperContent>
           <DialogFooter className="sm:justify-between">
-            <Button
-              disabled={isloading}
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
+            <Button disabled={isloading} type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={handleLoadFile}
-              className="gap-2"
-              disabled={isloading}
-            >
+            <Button type="button" onClick={handleLoadFile} className="gap-2" disabled={isloading}>
               {isloading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               Submit
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>{" "}
+      </Dialog>{' '}
     </div>
   );
 };
