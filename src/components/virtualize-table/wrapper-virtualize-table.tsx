@@ -9,7 +9,7 @@ export default function WrapperVirtualizeTable({ className, ...props }: React.Co
     <div
       className={cn('relative w-full overflow-auto', className)}
       style={{
-        maxHeight: `${resultPanelResize.height - 25}vh`,
+        maxHeight: `${resultPanelResize.height - 30}vh`,
         minHeight: '100px'
       }}
       {...props}
