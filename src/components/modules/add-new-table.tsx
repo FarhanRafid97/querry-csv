@@ -83,7 +83,7 @@ const AddNewTable = () => {
               disabled={isloading}
               className="cursor-pointer"
               maxFiles={5}
-              maxSize={5 * 1024 * 1024} // 5MB in bytes
+              maxSize={20 * 1024 * 1024} // 20MB in bytes
               accept={{
                 'text/csv': ['.csv'],
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx', '.xls']

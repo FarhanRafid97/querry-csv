@@ -1,22 +1,16 @@
-import type {
-  AsyncDuckDBInstance,
-  DuckDBModule,
-  DuckDBStore,
-} from "@/type/duckdb-state-type";
-import * as duckdb from "@duckdb/duckdb-wasm";
-import { useEffect } from "react";
-import { create } from "zustand";
+import type { AsyncDuckDBInstance, DuckDBModule, DuckDBStore } from '@/type/duckdb-state-type';
+import * as duckdb from '@duckdb/duckdb-wasm';
+import { useEffect } from 'react';
+import { create } from 'zustand';
 
 // DuckDB initialization function
-async function instantiateDuckDB(
-  dbModule: DuckDBModule
-): Promise<AsyncDuckDBInstance> {
+async function instantiateDuckDB(dbModule: DuckDBModule): Promise<AsyncDuckDBInstance> {
   try {
     const CDN_BUNDLES = dbModule.getJsDelivrBundles();
     const bundle = await dbModule.selectBundle(CDN_BUNDLES);
     const worker_url = URL.createObjectURL(
       new Blob([`importScripts("${bundle.mainWorker}");`], {
-        type: "text/javascript",
+        type: 'text/javascript'
       })
     );
 
@@ -26,11 +20,26 @@ async function instantiateDuckDB(
 
     await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
     URL.revokeObjectURL(worker_url);
+    await db.registerFileURL(
+      'httpfs.duckdb_extension',
+      'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm',
+      duckdb.DuckDBDataProtocol.HTTP,
+      true
+    );
+
+    // Enable autoinstall for known extensions
+    const connection = await db.connect();
+    await connection.query('SET autoinstall_known_extensions=1;');
+    await connection.query('INSTALL httpfs;');
+    await connection.query('LOAD httpfs;');
+
+    // Disconnect temp connection (optional, could keep for main usage)
+    await connection.close();
 
     return db;
-  } catch {
-    console.log("error disisni");
-    throw new Error("Failed to initialize DuckDB");
+  } catch (error) {
+    console.log('error disisni', error);
+    throw new Error('Failed to initialize DuckDB');
   }
 }
 
@@ -48,8 +57,7 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
 
   setError: (error: string) => set({ error: error }),
 
-  setCurrentShowingData: (currentShowingData: object[]) =>
-    set({ currentShowingData: currentShowingData }),
+  setCurrentShowingData: (currentShowingData: object[]) => set({ currentShowingData: currentShowingData }),
 
   // Actions
   initialize: async () => {
@@ -57,7 +65,7 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
 
     // Prevent multiple initializations
     if (isInitialized || db || loading) {
-      console.log("DuckDB already initialized or initialization in progress");
+      console.log('DuckDB already initialized or initialization in progress');
       return;
     }
 
@@ -66,6 +74,8 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
     try {
       const newDb = await instantiateDuckDB(duckdb);
       const connection = await newDb.connect();
+      connection.query(`INSTALL httpfs`);
+      connection.query(`LOAD 'httpfs';`);
 
       set({
         db: newDb,
@@ -73,20 +83,17 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
         loading: false,
         error: null,
         isInitialized: true,
-        currentShowingData: [],
+        currentShowingData: []
       });
 
-      console.log("DuckDB initialized successfully");
+      console.log('DuckDB initialized successfully');
     } catch (error) {
       set({
         loading: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to initialize DuckDB",
-        isInitialized: false,
+        error: error instanceof Error ? error.message : 'Failed to initialize DuckDB',
+        isInitialized: false
       });
-      console.error("Failed to initialize DuckDB:", error);
+      console.error('Failed to initialize DuckDB:', error);
     }
   },
 
@@ -94,7 +101,7 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
     const { connection, db } = get();
 
     if (!connection || !db) {
-      throw new Error("DuckDB not initialized. Call initialize() first.");
+      throw new Error('DuckDB not initialized. Call initialize() first.');
     }
 
     try {
@@ -102,8 +109,7 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
       const headers = result.schema.fields.map((field) => field.name);
       return [{ result, headers }, null];
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Query execution failed";
+      const errorMessage = error instanceof Error ? error.message : 'Query execution failed';
 
       return [null, errorMessage];
     }
@@ -124,15 +130,14 @@ export const useDuckDBStore = create<DuckDBStore>((set, get) => ({
         db: null,
         connection: null,
         error: null,
-        isInitialized: false,
+        isInitialized: false
       });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to close connection";
+      const errorMessage = error instanceof Error ? error.message : 'Failed to close connection';
       set({ error: errorMessage });
       throw error;
     }
-  },
+  }
 }));
 
 export default useDuckDBStore;
