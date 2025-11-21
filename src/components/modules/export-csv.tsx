@@ -61,7 +61,7 @@ const ExportCsv = ({ data, headers }: { data: object[]; headers: { label: string
             />
           </DialogWrapperContent>
           <DialogFooter className="sm:justify-end">
-            <CSVLink ref={ref} data={data} headers={headers} filename={fileName} separator=";">
+            <CSVLink ref={ref} data={data} headers={headers} filename={fileName} >
               <Button variant="outline" onClick={handleClick} className="cursor-pointer">
                 <FileIcon className="w-2 h-2" />
                 Save
