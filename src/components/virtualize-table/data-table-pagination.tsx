@@ -9,10 +9,12 @@ interface DataTablePaginationProps<TData> {
 }
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+  const totalRowCount = table.getRowCount();
   return (
     <div className="flex items-center justify-between px-1">
       <div className="flex-1 text-sm text-muted-foreground">
-        Page {table.getState().pagination.pageIndex + 1} — Showing {table.getState().pagination.pageSize} rows per page
+        {totalRowCount} rows total — Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} —
+        Showing {table.getState().pagination.pageSize} rows per page
       </div>
       <div className="flex items-center space-x-2 lg:space-x-4">
         <div className="flex items-center space-x-2">

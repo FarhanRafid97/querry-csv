@@ -43,7 +43,7 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
         }}
       >
         <div className="truncate overflow-hidden text-start">
-          <span className="text-sm  font-normal text-start text-black-shadow ">{title}</span>
+          <span className="text-[12px]  font-normal text-start text-black-shadow ">{title}</span>
         </div>
       </div>
     );
@@ -59,7 +59,7 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
           }}
         >
           <div className="truncate overflow-hidden text-start">
-            <span className="text-sm font-normal  text-start text-black-shadow ">{title}</span>
+            <span className="text-[12px] font-normal  text-start text-black-shadow ">{title}</span>
           </div>
           <div className="min-w-[14px]">
             {match(column.getIsSorted())
@@ -71,7 +71,7 @@ export function DataTableColumnHeaderComplete<TData, TValue>({
           </div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className=" border-gray-200 min-w-[15rem]">
+      <DropdownMenuContent align="start" className=" border-gray-200 min-w-60">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <ArrowUpIcon />
           Sort asc
