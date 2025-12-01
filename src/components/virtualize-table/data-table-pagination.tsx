@@ -13,8 +13,9 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   return (
     <div className="flex items-center justify-between px-1">
       <div className="flex-1 text-sm text-muted-foreground">
-        {totalRowCount} rows total — Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} —
-        Showing {table.getState().pagination.pageSize} rows per page
+        {totalRowCount.toLocaleString('de-DE')} rows total — Page{' '}
+        {(table.getState().pagination.pageIndex + 1).toLocaleString('de-DE')} of{' '}
+        {table.getPageCount().toLocaleString('de-DE')}
       </div>
       <div className="flex items-center space-x-2 lg:space-x-4">
         <div className="flex items-center space-x-2">
